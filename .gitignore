@@ -1,1 +1,6 @@
+# Files created by build
+.aws-sam
+.deno_dir
+
+# Tempolary files
 tmp
