@@ -1,9 +1,5 @@
-import {
-  Context,
-} from "https://deno.land/x/lambda@1.18.0/mod.ts";
-import {
-  RegisterEventRankings,
-} from "./RegisterEventRankings.ts"
+import { Context } from "./deps.ts"
+import { RegisterEventRankings } from "./RegisterEventRankings.ts"
 
 type EventParams = {
   eventId: string;

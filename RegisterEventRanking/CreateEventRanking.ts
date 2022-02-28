@@ -2,7 +2,7 @@ import {
   DynamoDBClient,
   createClient,
   ClientConfig
-} from "https://denopkg.com/chiefbiiko/dynamodb/mod.ts";
+} from "./deps.ts";
 
 export class CreateEventRanking {
   timestamp: string;

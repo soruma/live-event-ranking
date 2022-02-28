@@ -1,4 +1,4 @@
-import { format } from "https://deno.land/std@0.91.0/datetime/mod.ts";
+import { format } from "./deps.ts";
 import { CreateEventRanking } from "./CreateEventRanking.ts";
 
 export interface RegisterEventRankingsStatus {
