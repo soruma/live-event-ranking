@@ -45,7 +45,7 @@ export class RegisterEventRankings {
   }
 
   private registerEventRankings(eventRankings: any[]) {
-    const timestamp = format(new Date(), "yyyy-MM-dd HH:mm:ss");
+    const timestamp = format(new Date(), "yyyy-MM-ddTHH:mm:ss");
     eventRankings.map((eventRanking) => {
       const createEventRanking = new CreateEventRanking(timestamp, this.eventId, eventRanking);
       createEventRanking.save();

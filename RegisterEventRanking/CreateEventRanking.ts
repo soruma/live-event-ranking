@@ -26,7 +26,7 @@ export class CreateEventRanking {
     await this.client.putItem({
       TableName: "live-event-ranking-EventRankingHistories",
       Item: {
-        PK: `Event#${this.evnetId}-Rank#${this.eventRanking.rank}`,
+        PK: `Event#${this.evnetId}-Rank#${this.eventRanking.rank}-Timestamp#${this.timestamp}`,
         EventId: this.evnetId,
         ChannelId: this.eventRanking.channelId,
         ChannelIconURL: this.eventRanking.channelIconURL,
