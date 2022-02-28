@@ -34,6 +34,7 @@ Resources:
       Environment:
         Variables:
           USE_AWS: true
+          TABLE_NAME: !Ref EventRankingHistories
       Policies:
         Statement:
           Effect: "Allow"
@@ -46,7 +47,6 @@ Resources:
   EventRankingHistories:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: live-event-ranking-EventRankingHistories
       AttributeDefinitions:
         - AttributeName: PK
           AttributeType: S
