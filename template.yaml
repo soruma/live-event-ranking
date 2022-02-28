@@ -33,7 +33,6 @@ Resources:
         - !GetAtt Deno.Outputs.LayerArn
       Environment:
         Variables:
-          TABLE_NAME: !Ref EventRankingHistories
           USE_AWS: true
       Policies:
         Statement:
@@ -47,6 +46,7 @@ Resources:
   EventRankingHistories:
     Type: AWS::DynamoDB::Table
     Properties:
+      TableName: live-event-ranking-EventRankingHistories
       AttributeDefinitions:
         - AttributeName: PK
           AttributeType: S

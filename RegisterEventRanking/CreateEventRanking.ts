@@ -24,7 +24,7 @@ export class CreateEventRanking {
 
   async save(): Promise<boolean> {
     await this.client.putItem({
-      TableName: Deno.env.get("TABLE_NAME")!,
+      TableName: "live-event-ranking-EventRankingHistories",
       Item: {
         PK: `Event#${this.evnetId}-Rank#${this.eventRanking.rank}`,
         EventId: this.evnetId,
