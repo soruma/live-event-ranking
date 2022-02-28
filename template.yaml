@@ -41,8 +41,6 @@ Resources:
           Action:
             - "dynamodb:PutItem"
           Resource: !GetAtt EventRankingHistories.Arn
-    Metadata:
-      BuildMethod: makefile
 
   EventRankingHistories:
     Type: AWS::DynamoDB::Table
