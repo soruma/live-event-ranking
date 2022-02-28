@@ -1,6 +1,6 @@
 import {
   Context,
-} from "https://deno.land/x/lambda/mod.ts";
+} from "https://deno.land/x/lambda@1.18.0/mod.ts";
 import {
   RegisterEventRankings,
 } from "./RegisterEventRankings.ts"
