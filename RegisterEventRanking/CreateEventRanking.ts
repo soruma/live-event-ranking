@@ -26,7 +26,7 @@ export class CreateEventRanking {
     await this.client.putItem({
       TableName: Deno.env.get("TABLE_NAME")!,
       Item: {
-        PK: `Event#${this.evnetId}-Rank#${this.eventRanking.rank}-Timestamp#${this.timestamp}`,
+        PK: `Timestamp#${this.timestamp}-Event#${this.evnetId}-Rank#${this.eventRanking.rank}`,
         EventId: this.evnetId,
         ChannelId: this.eventRanking.channelId,
         ChannelIconURL: this.eventRanking.channelIconURL,
