@@ -1,8 +1,8 @@
 import {
   DynamoDBClient,
-  createClient,
-  ClientConfig
-} from "./deps.ts";
+  createClient
+} from "./lib/deps.ts";
+import { localClientConfig } from "./lib/LocalClientConfig.ts";
 
 export class CreateEventRanking {
   timestamp: string;
@@ -18,7 +18,7 @@ export class CreateEventRanking {
     if (Deno.env.get("USE_AWS")!) {
       this.client = createClient();
     } else {
-      this.client = createClient(this.localClientConfig());
+      this.client = createClient(localClientConfig());
     }
   }
 
@@ -38,16 +38,5 @@ export class CreateEventRanking {
     });
 
     return true;
-  }
-
-  localClientConfig(): ClientConfig {
-    return {
-      region: "local",
-      host: "dynamodb-local",
-      credentials: {
-        accessKeyId: "dummy",
-        secretAccessKey: "dummy"
-      }
-    };
   }
 }

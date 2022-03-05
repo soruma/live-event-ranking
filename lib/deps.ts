@@ -6,4 +6,3 @@ export type {
   ClientConfig,
 } from "https://denopkg.com/chiefbiiko/dynamodb/mod.ts";
 export { createClient } from "https://denopkg.com/chiefbiiko/dynamodb/mod.ts";
-
