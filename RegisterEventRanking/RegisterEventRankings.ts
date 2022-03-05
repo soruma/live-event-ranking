@@ -1,6 +1,6 @@
 import { format } from "./deps.ts";
 import { CreateEventRanking } from "./CreateEventRanking.ts";
-
+import { FetchEventRankings } from "./FetchEventRankings.ts"
 export interface RegisterEventRankingsStatus {
   status: number;
   count: number;
@@ -14,7 +14,8 @@ export class RegisterEventRankings {
   }
 
   async execute(rowNum = 0): Promise<RegisterEventRankingsStatus> {
-    const eventRanking = await this.fetchEventRankings(rowNum);
+    const fetchEventRankings = new FetchEventRankings(this.eventId);
+    const eventRanking = await fetchEventRankings.execute(rowNum);
 
     if (eventRanking.status != 200) {
       return { status: 500, count: 0 };
@@ -33,15 +34,6 @@ export class RegisterEventRankings {
     }
 
     return { status: 200, count: registerCount };
-  }
-
-  async fetchEventRankings(rowNum: number): Promise<any> {
-    const response = await fetch(this.url(rowNum));
-    return response.json();
-  }
-
-  private url(rowNum: number): string {
-    return `https://live-api.line-apps.com/web/v3.7/events/${this.eventId}/ranking?rowNum=${rowNum}`;
   }
 
   private registerEventRankings(eventRankings: any[]) {
