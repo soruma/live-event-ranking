@@ -4,6 +4,7 @@ import { FetchEventRankings } from "./FetchEventRankings.ts"
 export interface RegisterEventRankingsStatus {
   status: number;
   count: number;
+  message: string;
 }
 
 export class RegisterEventRankings {
@@ -18,7 +19,7 @@ export class RegisterEventRankings {
     const eventRanking = await fetchEventRankings.execute(rowNum);
 
     if (eventRanking.status != 200) {
-      return { status: 500, count: 0 };
+      return { status: eventRanking.status, count: 0, message: eventRanking.errorMessage };
     }
 
     this.registerEventRankings(eventRanking.rows);
@@ -33,7 +34,7 @@ export class RegisterEventRankings {
       registerCount = lastRowNum;
     }
 
-    return { status: 200, count: registerCount };
+    return { status: 200, count: registerCount, message: "Success" };
   }
 
   private registerEventRankings(eventRankings: any[]) {
