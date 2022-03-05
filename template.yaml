@@ -42,6 +42,26 @@ Resources:
             - "dynamodb:PutItem"
           Resource: !GetAtt EventRankingHistories.Arn
 
+  RegisterEventFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      CodeUri: RegisterEvent
+      Handler: App.handler
+      Runtime: provided.al2
+      MemorySize: 128
+      Layers:
+        - !GetAtt Deno.Outputs.LayerArn
+      Environment:
+        Variables:
+          USE_AWS: true
+          TABLE_NAME: !Ref EventRankingHistories
+      Policies:
+        Statement:
+          Effect: "Allow"
+          Action:
+            - "dynamodb:PutItem"
+          Resource: !GetAtt EventRankingHistories.Arn
+
   EventRankingHistories:
     Type: AWS::DynamoDB::Table
     Properties:
