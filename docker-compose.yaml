@@ -11,3 +11,13 @@ services:
       - ./tmp/docker/dynamodb:/home/dynamodblocal/data
     working_dir: /home/dynamodblocal
     user: root
+
+  lambci:
+    image: lambci/lambda:provided.al2
+    environment:
+      - TABLE_NAME=EventRankingHistories
+    volumes:
+      - .:/var/task
+      - ./tmp/deno-lambda-layer:/opt
+    depends_on:
+      - dynamodb-local
