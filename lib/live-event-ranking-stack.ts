@@ -27,6 +27,11 @@ export class LiveEventRankingStack extends Stack {
     };
     eventRankingHistoriesTable.addGlobalSecondaryIndex(channelPoint);
 
+    const eventRankingHistoriesTablePolicy = new iam.PolicyStatement({
+      actions: ["dynamodb:PutItem"],
+      resources: [eventRankingHistoriesTable.tableArn],
+    });
+
     const denoLayer = new lambda.LayerVersion(this, 'deno-layer', {
       code: lambda.Code.fromAsset('src/layer'),
       compatibleRuntimes: [lambda.Runtime.PROVIDED],
@@ -46,13 +51,26 @@ export class LiveEventRankingStack extends Stack {
       timeout: Duration.seconds(20)
     });
 
-    const eventRankingHistoriesTablePolicy = new iam.PolicyStatement({
-      actions: ["dynamodb:PutItem"],
-      resources: [eventRankingHistoriesTable.tableArn],
+    registerEventRankingFunction.role?.attachInlinePolicy(
+      new iam.Policy(this, "registerEventRankingFunction-put-item-policy", {
+        statements: [eventRankingHistoriesTablePolicy],
+      }),
+    );
+
+    const registerEventFunction = new lambda.Function(this, 'registerEvent', {
+      code: lambda.Code.fromAsset('src/functions/registerEvent'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PROVIDED,
+      layers: [ denoLayer ],
+      environment: {
+        USE_AWS: "true",
+        TABLE_NAME: eventRankingHistoriesTable.tableName
+      },
+      timeout: Duration.seconds(20)
     });
 
-    registerEventRankingFunction.role?.attachInlinePolicy(
-      new iam.Policy(this, "put-item-policy", {
+    registerEventFunction.role?.attachInlinePolicy(
+      new iam.Policy(this, "registerEventFunction-put-item-policy", {
         statements: [eventRankingHistoriesTablePolicy],
       }),
     );
