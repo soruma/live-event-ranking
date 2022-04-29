@@ -1,3 +1,8 @@
+export type ErrorResponse = {
+  statusCode: number,
+  message: string
+};
+
 export type Event = {
   id: number,
   categoryId: number,

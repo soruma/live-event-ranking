@@ -27,8 +27,3 @@ const EventHeldStatusType = {
 
 export type EventHeldStatusType = typeof EventHeldStatusType[keyof typeof EventHeldStatusType];
 export const AllEventHeldStatusType = Object.values(EventHeldStatusType);
-
-export type ErrorResponse = {
-  statusCode: number,
-  message: string
-}
