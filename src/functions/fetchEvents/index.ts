@@ -1,5 +1,6 @@
 import { Context } from "https://deno.land/x/lambda@1.18.0/mod.ts";
-import { Event, ErrorResponse } from "./types.ts"
+import { Event } from "./modules/types.ts";
+import { ErrorResponse } from "./types.ts";
 import { FetchEvents } from './FetchEvents.ts';
 
 type EventParam = null;

@@ -14,24 +14,24 @@ services:
 
   fetchEvents:
     image: hayd/deno-lambda:1.21.1
-    command: index.handler
+    command: functions/fetchEvents/index.handler
     volumes:
-      - ./src/functions/fetchEvents:/var/task
+      - ./src:/var/task
     ports:
       - 9000:8080
 
   registerEvent:
     image: hayd/deno-lambda:1.21.1
-    command: index.handler
+    command: functions/registerEvent/index.handler
     volumes:
-      - ./src/functions/registerEvent:/var/task
+      - ./src:/var/task
     ports:
       - 9001:8080
 
   registerEventRanking:
     image: hayd/deno-lambda:1.21.1
-    command: index.handler
+    command: functions/registerEventRanking/index.handler
     volumes:
-      - ./src/functions/registerEventRanking:/var/task
+      - ./src:/var/task
     ports:
       - 9002:8080
