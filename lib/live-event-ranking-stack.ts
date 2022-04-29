@@ -3,6 +3,10 @@ import { Construct } from 'constructs';
 import { aws_iam as iam } from 'aws-cdk-lib';
 import { aws_dynamodb as dynamo } from 'aws-cdk-lib';
 import { aws_lambda as lambda } from 'aws-cdk-lib';
+import { aws_sam as sam } from 'aws-cdk-lib';
+
+const APPLICATION_ID = 'arn:aws:serverlessrepo:us-east-1:390065572566:applications/deno'
+const DENO_VERSION = '1.21.0'
 
 export class LiveEventRankingStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -32,17 +36,23 @@ export class LiveEventRankingStack extends Stack {
       resources: [eventRankingHistoriesTable.tableArn],
     });
 
-    const denoLayer = new lambda.LayerVersion(this, 'deno-layer', {
-      code: lambda.Code.fromAsset('src/layer'),
-      compatibleRuntimes: [lambda.Runtime.PROVIDED],
-      license: 'Apache-2.0',
-      description: 'A layer that enebales Deno to run in lambda',
+    const denoRuntime = new sam.CfnApplication(this, `DenoRuntime`, {
+      location: {
+        applicationId: APPLICATION_ID,
+        semanticVersion: DENO_VERSION
+      }
     });
+
+    const denoLayer = lambda.LayerVersion.fromLayerVersionArn(
+      this,
+      `denoRuntimeLayer`,
+      denoRuntime.getAtt('Outputs.LayerArn').toString()
+    );
 
     const registerEventRankingFunction = new lambda.Function(this, 'registerEventRanking', {
       code: lambda.Code.fromAsset('src/functions/registerEventRanking'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.PROVIDED,
+      runtime: lambda.Runtime.PROVIDED_AL2,
       layers: [ denoLayer ],
       environment: {
         USE_AWS: "true",

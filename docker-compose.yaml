@@ -12,12 +12,18 @@ services:
     working_dir: /home/dynamodblocal
     user: root
 
-  lambci:
-    image: lambci/lambda:provided.al2
-    environment:
-      - TABLE_NAME=EventRankingHistories
+  registerEvent:
+    image: hayd/deno-lambda:1.21.1
+    command: index.handler
     volumes:
-      - .:/var/task
-      - ./tmp/deno-lambda-layer:/opt
-    depends_on:
-      - dynamodb-local
+      - ./src/functions/registerEvent:/var/task
+    ports:
+      - 9000:8080
+
+  registerEventRanking:
+    image: hayd/deno-lambda:1.21.1
+    command: index.handler
+    volumes:
+      - ./src/functions/registerEventRanking:/var/task
+    ports:
+      - 9001:8080
