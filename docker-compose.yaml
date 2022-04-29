@@ -12,13 +12,21 @@ services:
     working_dir: /home/dynamodblocal
     user: root
 
+  fetchEvents:
+    image: hayd/deno-lambda:1.21.1
+    command: index.handler
+    volumes:
+      - ./src/functions/fetchEvents:/var/task
+    ports:
+      - 9000:8080
+
   registerEvent:
     image: hayd/deno-lambda:1.21.1
     command: index.handler
     volumes:
       - ./src/functions/registerEvent:/var/task
     ports:
-      - 9000:8080
+      - 9001:8080
 
   registerEventRanking:
     image: hayd/deno-lambda:1.21.1
@@ -26,4 +34,4 @@ services:
     volumes:
       - ./src/functions/registerEventRanking:/var/task
     ports:
-      - 9001:8080
+      - 9002:8080

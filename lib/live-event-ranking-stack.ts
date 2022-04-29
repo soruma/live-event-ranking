@@ -49,6 +49,13 @@ export class LiveEventRankingStack extends Stack {
       denoRuntime.getAtt('Outputs.LayerArn').toString()
     );
 
+    const fetchEventsFunction = new lambda.Function(this, 'fetchEvents', {
+      code: lambda.Code.fromAsset('src/functions/fetchEvents'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PROVIDED_AL2,
+      layers: [ denoLayer ],
+    });
+
     const registerEventRankingFunction = new lambda.Function(this, 'registerEventRanking', {
       code: lambda.Code.fromAsset('src/functions/registerEventRanking'),
       handler: 'index.handler',
@@ -62,7 +69,7 @@ export class LiveEventRankingStack extends Stack {
     });
 
     registerEventRankingFunction.role?.attachInlinePolicy(
-      new iam.Policy(this, "registerEventRankingFunction-put-item-policy", {
+      new iam.Policy(this, "registerEventRankingFunction-inline-policy", {
         statements: [eventRankingHistoriesTablePolicy],
       }),
     );
@@ -80,7 +87,7 @@ export class LiveEventRankingStack extends Stack {
     });
 
     registerEventFunction.role?.attachInlinePolicy(
-      new iam.Policy(this, "registerEventFunction-put-item-policy", {
+      new iam.Policy(this, "registerEventFunction-inline-policy", {
         statements: [eventRankingHistoriesTablePolicy],
       }),
     );
