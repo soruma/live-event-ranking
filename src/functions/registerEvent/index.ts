@@ -1,23 +1,23 @@
 import { Context } from "./lib/deps.ts"
-import { RegisterEvents } from './RegisterEvents.ts';
+import { Event } from "./modules/types.ts";
+import { CreateEvent } from './CreateEvent.ts';
+import { ErrorResponse } from './modules/types.ts';
+
+type SuccessResponse = {
+  statusCode: number
+}
 
 export async function handler(
-  _event: any,
+  event: Event,
   _context: Context
-): Promise<any> {
-  let response;
+): Promise<SuccessResponse | ErrorResponse > {
+  const createEvent = new CreateEvent(event);
 
-  try {
-    const registerEvents = new RegisterEvents();
-
-    response = await registerEvents.execute();
-  } catch (error) {
-    console.log(error);
-    response = {
-      statusCode: 500,
-      message: error
-    };
-  }
-
-  return response;
+  return new Promise((resolve, reject) => {
+    createEvent.save().then(() => {
+      resolve({ statusCode: 200 });
+    }).catch((error: Error) => {
+      reject({ statusCode: 500, message: error });
+    });
+  });
 }

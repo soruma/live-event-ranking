@@ -3,13 +3,13 @@ import {
   createClient
 } from "./lib/deps.ts";
 import { localClientConfig } from "./lib/LocalClientConfig.ts";
-import { LiveEvent } from "./types.ts";
+import { Event } from "./modules/types.ts";
 
 export class CreateEvent {
-  event: LiveEvent;
+  event: Event;
   private client: DynamoDBClient;
 
-  constructor(event: LiveEvent) {
+  constructor(event: Event) {
     this.event = event;
 
     if (Deno.env.get("USE_AWS")!) {
@@ -19,22 +19,24 @@ export class CreateEvent {
     }
   }
 
-  async save(): Promise<boolean> {
-    await this.client.putItem({
-      TableName: Deno.env.get("TABLE_NAME")!,
-      Item: {
-        EventId: this.event.id,
-        Attribute: "Details",
-        
-        Title: this.event.title,
-        BannerImageURL: this.event.bannerImageURL,
-        Weight: this.event.weight,
-        StartAt: this.event.startAt,
-        EndAt: this.event.endAt,
-        ParticipantCount: this.event.participantCount,
-      }
-    });
+  save(): Promise<boolean> {
+    return new Promise((resolve) => {
+      this.client.putItem({
+        TableName: Deno.env.get("TABLE_NAME")!,
+        Item: {
+          EventId: this.event.id,
+          Attribute: "Details",
 
-    return true;
+          CategoryId: this.event.categoryId,
+          CategoryName: this.event.categoryName,
+          BannerImageURL: this.event.bannerImageURL,
+          Weight: this.event.weight,
+          StartAt: this.event.startAt,
+          EndAt: this.event.endAt
+        }
+      });
+
+      resolve(true);
+    });
   }
 }
