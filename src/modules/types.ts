@@ -5,6 +5,7 @@ export type ErrorResponse = {
 
 export type Event = {
   id: number,
+  title: string,
   categoryId: number,
   categoryName: string,
   bannerImageURL: URL,
