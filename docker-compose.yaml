@@ -25,6 +25,8 @@ services:
     command: functions/registerEvent/index.handler
     volumes:
       - ./src:/var/task
+    environment:
+      - TABLE_NAME=EventRankingHistoriesE67FD46C
     ports:
       - 9001:8080
 
