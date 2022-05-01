@@ -28,8 +28,7 @@ export class RegisterEvent {
       environment: {
         USE_AWS: "true",
         TABLE_NAME: eventRankingHistoriesTable.tableName
-      },
-      timeout: Duration.seconds(20)
+      }
     });
   }
 }
@@ -46,8 +45,7 @@ export class RegisterEventRanking {
       environment: {
         USE_AWS: "true",
         TABLE_NAME: eventRankingHistoriesTable.tableName
-      },
-      timeout: Duration.seconds(20)
+      }
     });
   }
 }
