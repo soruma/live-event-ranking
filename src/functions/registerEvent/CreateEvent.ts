@@ -1,8 +1,8 @@
 import {
   DynamoDBClient,
   createClient
-} from "./lib/deps.ts";
-import { localClientConfig } from "./lib/LocalClientConfig.ts";
+} from "./modules/deps.ts";
+import { localClientConfig } from "./modules/LocalClientConfig.ts";
 import { Event } from "./modules/types.ts";
 
 export class CreateEvent {

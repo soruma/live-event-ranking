@@ -1,4 +1,4 @@
-import { Context } from "./lib/deps.ts"
+import { Context } from "./deps.ts"
 import { Event } from "./modules/types.ts";
 import { CreateEvent } from './CreateEvent.ts';
 import { ErrorResponse } from './modules/types.ts';
