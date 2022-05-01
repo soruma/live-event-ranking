@@ -7,7 +7,7 @@ type SuccessResponse = {
   statusCode: number
 }
 
-export async function handler(
+export function handler(
   event: Event,
   _context: Context
 ): Promise<SuccessResponse | ErrorResponse > {
