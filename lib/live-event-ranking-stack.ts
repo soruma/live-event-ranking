@@ -1,9 +1,12 @@
-import { Stack, StackProps, Duration } from 'aws-cdk-lib';
+import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { aws_iam as iam } from 'aws-cdk-lib';
 import { aws_dynamodb as dynamo } from 'aws-cdk-lib';
+import { aws_events as events }from "aws-cdk-lib";
+import { aws_events_targets as events_targets }from "aws-cdk-lib";
 import { DenoLayer } from "./deno-layer";
-import { FetchEvent, RegisterEvent, RegisterEventRanking } from "./functions"
+import { FetchEvents, RegisterEvent, RegisterEventRanking } from "./functions";
+import { RegisterEventsStepfunction } from './register-events-step-function';
 
 export class LiveEventRankingStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -35,7 +38,7 @@ export class LiveEventRankingStack extends Stack {
 
     const denoLayer = new DenoLayer(this);
 
-    const fetchEvents = new FetchEvent(this, denoLayer);
+    const fetchEvents = new FetchEvents(this, denoLayer);
 
     const registerEvent = new RegisterEvent(this, denoLayer, eventRankingHistoriesTable)
     registerEvent.function.role?.attachInlinePolicy(
@@ -50,5 +53,11 @@ export class LiveEventRankingStack extends Stack {
         statements: [eventRankingHistoriesTablePolicy],
       }),
     );
+
+    const registerEventsStepfunction = new RegisterEventsStepfunction(this, fetchEvents, registerEvent);
+    new events.Rule(this, "RegisterEventsRule", {
+      schedule: events.Schedule.cron({minute: "0", hour: "9", day: "*"}),
+      targets: [ new events_targets.SfnStateMachine(registerEventsStepfunction.stateMachine) ],
+    });
   }
 }

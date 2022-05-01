@@ -1,4 +1,4 @@
-import { Stack, Duration } from 'aws-cdk-lib';
+import { Stack } from 'aws-cdk-lib';
 import { aws_dynamodb as dynamo } from 'aws-cdk-lib';
 import { aws_lambda as lambda } from 'aws-cdk-lib';
 import { DenoLayer } from './deno-layer';
