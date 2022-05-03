@@ -23,7 +23,7 @@ export class RegisterEvent {
     this.function = new lambda.Function(stack, 'registerEvent', {
       code: lambda.Code.fromAsset('src/functions/registerEvent'),
       handler: 'index.handler',
-      runtime: lambda.Runtime.PROVIDED,
+      runtime: lambda.Runtime.PROVIDED_AL2,
       layers: [ denoLayer.arn ],
       environment: {
         USE_AWS: "true",
