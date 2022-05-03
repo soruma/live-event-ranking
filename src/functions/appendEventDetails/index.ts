@@ -14,12 +14,14 @@ export async function handler(
   console.log(`event: ${JSON.stringify(event)}`);
 
   const updateEventValues = await Promise.all(event["Records"].map(async (record: any) => {
+    // Receive EventId under records for recovery 
+    if (record["EventId"] != undefined) { return await fetchEventDetail(record["EventId"] as number); }
+    // Ignore all but INSERT events
     if (record["eventName"] != "INSERT") { return { statusCode: 404 }; }
 
     const eventId = parseInt(record["dynamodb"]["Keys"]["EventId"]["N"]);
-    const fetchEventDetail = new FetchEventDetail(eventId);
 
-    return { statusCode: 200, eventId: eventId, title: await fetchEventDetail.title() };
+    return await fetchEventDetail(eventId);
   }));
 
   await Promise.all(updateEventValues.map(async (updateEventValue: any) => {
@@ -33,4 +35,10 @@ export async function handler(
   }));
 
   return { statusCode: 200 };
+}
+
+async function fetchEventDetail(eventId: number) {
+  const fetchEventDetail = new FetchEventDetail(eventId);
+
+  return { statusCode: 200, eventId: eventId, title: await fetchEventDetail.title() }
 }
