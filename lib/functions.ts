@@ -16,12 +16,12 @@ export class FetchEvents {
   }
 }
 
-export class RegisterEvent {
+export class RegisterEvents {
   function: lambda.Function;
 
   constructor(stack: Stack, denoLayer: DenoLayer, eventRankingHistoriesTable: dynamo.Table) {
-    this.function = new lambda.Function(stack, 'registerEvent', {
-      code: lambda.Code.fromAsset('src/functions/registerEvent'),
+    this.function = new lambda.Function(stack, 'registerEvents', {
+      code: lambda.Code.fromAsset('src/functions/registerEvents'),
       handler: 'index.handler',
       runtime: lambda.Runtime.PROVIDED_AL2,
       layers: [ denoLayer.arn ],

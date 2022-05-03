@@ -20,9 +20,9 @@ services:
     ports:
       - 9000:8080
 
-  registerEvent:
+  registerEvents:
     image: hayd/deno-lambda:1.21.1
-    command: functions/registerEvent/index.handler
+    command: functions/registerEvents/index.handler
     volumes:
       - ./src:/var/task
     environment:
