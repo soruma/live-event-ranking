@@ -51,16 +51,6 @@ export class LiveEventRankingStack extends Stack {
       })
     );
 
-    const registerEventRanking = new RegisterEventRanking(this, denoLayer, eventRankingHistoriesTable);
-    registerEventRanking.function.role?.attachInlinePolicy(
-      new iam.Policy(this, "registerEventRankingFunction-inline-policy", {
-        statements: [new iam.PolicyStatement({
-                        actions: ["dynamodb:PutItem"],
-                        resources: [eventRankingHistoriesTable.tableArn]
-                      })]
-      })
-    );
-
     const registerEventsStepfunction = new RegisterEventsStepfunction(this, fetchEvents, registerEvents);
     new events.Rule(this, "RegisterEventsRule", {
       schedule: events.Schedule.cron({minute: "0", hour: "9", day: "*"}),
@@ -93,5 +83,15 @@ export class LiveEventRankingStack extends Stack {
       batchSize: 10,
       startingPosition: lambda.StartingPosition.LATEST,
     });
+
+    const registerEventRanking = new RegisterEventRanking(this, denoLayer, eventRankingHistoriesTable);
+    registerEventRanking.function.role?.attachInlinePolicy(
+      new iam.Policy(this, "registerEventRankingFunction-inline-policy", {
+        statements: [new iam.PolicyStatement({
+                        actions: ["dynamodb:PutItem"],
+                        resources: [eventRankingHistoriesTable.tableArn]
+                      })]
+      })
+    );
   }
 }
