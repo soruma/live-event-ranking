@@ -45,6 +45,9 @@ export function handler(
         attribute: {
           AttributeValueList: ["Details"], ComparisonOperator: "EQ"
         },
+        rankingType: {
+          AttributeValueList: ["NONE"], ComparisonOperator: "NE"
+        },
         endAt: {
           AttributeValueList: [now + graceToExcludeEvents], ComparisonOperator: "LT"
         }
