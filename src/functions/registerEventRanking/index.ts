@@ -1,5 +1,5 @@
 
-import { Context } from "./lib/deps.ts"
+import { Context } from "./deps.ts"
 import { RegisterEventRankings } from "./RegisterEventRankings.ts"
 
 type EventParams = {

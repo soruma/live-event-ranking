@@ -2,8 +2,8 @@ import {
   DynamoDBClient,
   createClient,
   Doc
-} from "./lib/deps.ts";
-import { localClientConfig } from "./lib/LocalClientConfig.ts";
+} from "./modules/deps.ts";
+import { localClientConfig } from "./modules/LocalClientConfig.ts";
 
 export class CreateEventRanking {
   timestamp: string;

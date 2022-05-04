@@ -1,4 +1,4 @@
-import { format } from "./lib/deps.ts";
+import { format } from "./deps.ts";
 import { CreateEventRanking } from "./CreateEventRanking.ts";
 import { FetchEventRankings } from "./FetchEventRankings.ts"
 
