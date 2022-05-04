@@ -1,3 +1,5 @@
+import { Event } from "./modules/types.ts"
+
 type EventsResponse = {
   status: number;
   apistatusCode: number;
@@ -9,17 +11,5 @@ type Category = {
   id: number;
   name: string;
   categoryOrder: number;
-  rows: LiveEvent[];
-}
-
-type LiveEvent = {
-  id: number,
-  title: string,
-  bannerImageURL: string,
-  weight: number,
-  startAt: number,
-  endAt: number,
-  rankingStartAt: number,
-  rankingEndAt: number,
-  participantCount: number
+  rows: Event[];
 }

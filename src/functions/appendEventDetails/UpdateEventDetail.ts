@@ -27,13 +27,13 @@ export class UpdateEventDetail {
     return new Promise((resolve, reject) => {
       this.client.updateItem({
         TableName: Deno.env.get("TABLE_NAME")!,
-        Key: { EventId: this.updateEventDetail.eventId, Attribute: "Details" },
-        UpdateExpression: "set #Title=:title",
-        ExpressionAttributeNames: { "#Title": "Title" },
+        Key: { eventId: this.updateEventDetail.eventId, attribute: "Details" },
+        UpdateExpression: "set #title=:title",
+        ExpressionAttributeNames: { "#title": "title" },
         ExpressionAttributeValues: { ":title": this.updateEventDetail.title },
         ReturnValues: "UPDATED_NEW",
       }).then((returnValue) => {
-        if (returnValue["Attributes"] && returnValue["Attributes"]["Title"] == undefined) {
+        if (returnValue["Attributes"] && returnValue["Attributes"]["title"] == undefined) {
           reject(false);
         } else {
           resolve(true);

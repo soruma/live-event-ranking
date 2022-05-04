@@ -15,11 +15,11 @@ export async function handler(
 
   const updateEventValues = await Promise.all(event["Records"].map(async (record: any) => {
     // Receive EventId under records for recovery 
-    if (record["EventId"] != undefined) { return await fetchEventDetail(record["EventId"] as number); }
+    if (record["eventId"] != undefined) { return await fetchEventDetail(record["eventId"] as number); }
     // Ignore all but INSERT events
     if (record["eventName"] != "INSERT") { return { statusCode: 404 }; }
 
-    const eventId = parseInt(record["dynamodb"]["Keys"]["EventId"]["N"]);
+    const eventId = parseInt(record["dynamodb"]["Keys"]["eventId"]["N"]);
 
     return await fetchEventDetail(eventId);
   }));

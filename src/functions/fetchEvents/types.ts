@@ -6,15 +6,15 @@ export type category = {
 };
 
 export type FinishedEvents = {
-  events: [Event],
+  events: ResponseEvent[],
   apistatusCode: number,
   status: number
 };
 
 export type OngoingEvents = {
-  canParticipate: Event[],
-  eventByCategoryId: { [key: string]: Event[] },
-  endingSoon: Event[],
+  canParticipate: ResponseEvent[],
+  eventByCategoryId: { [key: string]: ResponseEvent[] },
+  endingSoon: ResponseEvent[],
   categories: category[],
   apistatusCode: number,
   status: number
@@ -27,3 +27,10 @@ const EventHeldStatusType = {
 
 export type EventHeldStatusType = typeof EventHeldStatusType[keyof typeof EventHeldStatusType];
 export const AllEventHeldStatusType = Object.values(EventHeldStatusType);
+
+export type ResponseEvent = Event & {
+  id?: number;
+  weight?: number;
+  rankingStartAt?: number;
+  rankingEndAt?: number;
+}

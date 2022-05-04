@@ -15,11 +15,11 @@ export class LiveEventRankingStack extends Stack {
 
     const eventRankingHistoriesTable = new dynamodb.Table(this, "EventRankingHistories", {
       partitionKey: {
-        name: "EventId",
+        name: "eventId",
         type: dynamodb.AttributeType.NUMBER,
       },
       sortKey: {
-        name: "Attribute",
+        name: "attribute",
         type: dynamodb.AttributeType.STRING,
       },
       tableName: "EventRankingHistories",
@@ -30,8 +30,8 @@ export class LiveEventRankingStack extends Stack {
 
     const channelPoint: dynamodb.GlobalSecondaryIndexProps = {
       indexName: "ChannelPoint",
-      partitionKey: { name: "ChannelId", type: dynamodb.AttributeType.NUMBER },
-      sortKey: { name: "Timestamp", type: dynamodb.AttributeType.STRING },
+      partitionKey: { name: "channelId", type: dynamodb.AttributeType.NUMBER },
+      sortKey: { name: "timestamp", type: dynamodb.AttributeType.STRING },
       readCapacity: 5,
       writeCapacity: 5
     };

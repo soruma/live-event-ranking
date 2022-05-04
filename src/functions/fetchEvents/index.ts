@@ -1,6 +1,7 @@
 import { Context } from "https://deno.land/x/lambda@1.18.0/mod.ts";
 import { ErrorResponse, Event } from "./modules/types.ts";
 import { FetchEvents } from './FetchEvents.ts';
+import { ResponseEvent } from './types.ts';
 
 type EventParam = null;
 type SuccessResponse = {
@@ -27,7 +28,9 @@ export function handler(
       Object.keys(ongoingEvents.eventByCategoryId).forEach(key => {
         const belongToEvents = ongoingEvents.eventByCategoryId[key];
         const appendCateEvents = belongToEvents.map(event => {
+          event.eventId = event.id!;
           event.categoryId = parseInt(key);
+          event = removeUnnecessaryAttributes(event);
           return event;
         });
         events.push(...appendCateEvents);
@@ -38,4 +41,13 @@ export function handler(
       reject({ statusCode: 500, message: error.message });
     });
   });
+}
+
+function removeUnnecessaryAttributes(event: ResponseEvent): Event {
+  delete event.id;
+  delete event.weight;
+  delete event.rankingStartAt;
+  delete event.rankingEndAt;
+
+  return event as Event;
 }

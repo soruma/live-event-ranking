@@ -25,15 +25,8 @@ export class CreateEvents {
       return {
         PutRequest: {
           Item: {
-            EventId: event.id,
-            Attribute: "Details",
-
-            CategoryId: event.categoryId,
-            CategoryName: event.categoryName,
-            BannerImageURL: event.bannerImageURL,
-            Weight: event.weight,
-            StartAt: event.startAt,
-            EndAt: event.endAt
+            ...event,
+            attribute: "Details",
           }
         }
       }
