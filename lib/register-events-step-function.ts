@@ -19,12 +19,12 @@ export class RegisterEventsStepfunction {
     });
 
     // Define Succeess, Fail, ErrorAndFail states
-    const stepFailOnErrorState = new sfn.Fail(stack, 'Handle Error and Fail.', {
+    const stepFailOnErrorState = new sfn.Fail(stack, 'FetchEvents Error and Fail', {
       comment: 'Handle Error and Exit.',
     });
 
     const failedState = new sfn.Fail(stack, 'Error for FetchEvents');
-    const successState = new sfn.Succeed(stack, 'Success');
+    const successState = new sfn.Succeed(stack, 'Success RegisterEventsStateMachine');
 
     const stepSuccessFailBranch = new sfn.Choice(stack, 'Check response for FetchEvents')
       .otherwise(failedState)
@@ -37,6 +37,6 @@ export class RegisterEventsStepfunction {
     this.stateMachine = new sfn.StateMachine(stack, 'RegisterEventsStateMachine', {
       definition: definition,
       stateMachineName: 'RegisterEventsStateMachine',
-  });
+    });
   }
 }

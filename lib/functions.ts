@@ -51,6 +51,24 @@ export class AppendEventDetails {
   }
 }
 
+export class FetchEventsThatUpdateRanking {
+  function: lambda.Function;
+
+  constructor(stack: Stack, denoLayer: DenoLayer, eventRankingHistoriesTable: dynamo.Table, graceToExcludeEvents: number) {
+    this.function = new lambda.Function(stack, 'fetchEventsThatUpdateRanking', {
+      code: lambda.Code.fromAsset('src/functions/fetchEventsThatUpdateRanking'),
+      handler: 'index.handler',
+      runtime: lambda.Runtime.PROVIDED_AL2,
+      layers: [ denoLayer.arn ],
+      environment: {
+        USE_AWS: "true",
+        TABLE_NAME: eventRankingHistoriesTable.tableName,
+        GRACE_TO_EXCLUDE_EVENTS: graceToExcludeEvents.toString()
+      }
+    });
+  }
+}
+
 export class RegisterEventRanking {
   function: lambda.Function;
 

@@ -6,8 +6,9 @@ import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
 import { aws_events as events }from "aws-cdk-lib";
 import { aws_events_targets as events_targets }from "aws-cdk-lib";
 import { DenoLayer } from "./deno-layer";
-import { FetchEvents, RegisterEvents, AppendEventDetails, RegisterEventRanking } from "./functions";
+import { FetchEvents, RegisterEvents, AppendEventDetails, RegisterEventRanking, FetchEventsThatUpdateRanking } from "./functions";
 import { RegisterEventsStepfunction } from './register-events-step-function';
+import { RegisterEventRankingsStepfunction } from './register-event-rankings-step-function';
 
 export class LiveEventRankingStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
@@ -84,6 +85,16 @@ export class LiveEventRankingStack extends Stack {
       startingPosition: lambda.StartingPosition.LATEST,
     });
 
+    const fetchEventsThatUpdateRanking = new FetchEventsThatUpdateRanking(this, denoLayer, eventRankingHistoriesTable, 5400);
+    fetchEventsThatUpdateRanking.function.role?.attachInlinePolicy(
+      new iam.Policy(this, "fetchEventsThatUpdateRankingFunction-inline-policy", {
+        statements: [new iam.PolicyStatement({
+                        actions: ["dynamodb:Scan"],
+                        resources: [eventRankingHistoriesTable.tableArn]
+                      })]
+      })
+    );
+
     const registerEventRanking = new RegisterEventRanking(this, denoLayer, eventRankingHistoriesTable);
     registerEventRanking.function.role?.attachInlinePolicy(
       new iam.Policy(this, "registerEventRankingFunction-inline-policy", {
@@ -93,5 +104,11 @@ export class LiveEventRankingStack extends Stack {
                       })]
       })
     );
+
+    const registerEventRankingsStepfunction = new RegisterEventRankingsStepfunction(this, fetchEventsThatUpdateRanking, registerEventRanking);
+    new events.Rule(this, "RegisterEventRankingsRule", {
+      schedule: events.Schedule.cron({minute: "0", hour: "*", day: "*"}),
+      targets: [ new events_targets.SfnStateMachine(registerEventRankingsStepfunction.stateMachine) ],
+    });
   }
 }

@@ -40,6 +40,17 @@ services:
     ports:
       - 9002:8080
 
+  fetchEventsThatUpdateRanking:
+    image: hayd/deno-lambda:1.21.1
+    command: functions/fetchEventsThatUpdateRanking/index.handler
+    volumes:
+      - ./src:/var/task
+    environment:
+      - TABLE_NAME=EventRankingHistoriesE67FD46C
+      - GRACE_TO_EXCLUDE_EVENTS=1000
+    ports:
+      - 9003:8080
+
   registerEventRanking:
     image: hayd/deno-lambda:1.21.1
     command: functions/registerEventRanking/index.handler
@@ -48,4 +59,4 @@ services:
     environment:
       - TABLE_NAME=EventRankingHistoriesE67FD46C
     ports:
-      - 9003:8080
+      - 9004:8080
