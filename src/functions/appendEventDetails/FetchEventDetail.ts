@@ -16,6 +16,12 @@ export class FetchEventDetail {
     return JSON.parse(this.doc?.querySelector("#data").attributes["data-event"]).title;
   }
 
+  async rankingType(): Promise<string> {
+    await this.document();
+
+    return JSON.parse(this.doc?.querySelector("#data").attributes["data-event"]).rankingType;
+  }
+
   private async document() {
     if (this.doc != undefined) { return this.doc; }
 

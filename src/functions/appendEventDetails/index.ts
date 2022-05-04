@@ -7,6 +7,12 @@ type SuccessResponse = {
   statusCode: number
 };
 
+type AppendEventDetails = {
+  eventId: number;
+  title: string;
+  rankingType: string;
+};
+
 export async function handler(
   event: any,
   _context: Context
@@ -24,12 +30,11 @@ export async function handler(
     return await fetchEventDetail(eventId);
   }));
 
-  await Promise.all(updateEventValues.map(async (updateEventValue: any) => {
-    if (updateEventValue.statusCode != 200) { return; }
-
+  await Promise.all(updateEventValues.map(async (updateEventValue: AppendEventDetails) => {
     const updateEventDetail = new UpdateEventDetail({
       eventId: updateEventValue.eventId,
       title: updateEventValue.title,
+      rankingType: updateEventValue.rankingType
     });
     return await updateEventDetail.save();
   }));
@@ -37,8 +42,12 @@ export async function handler(
   return { statusCode: 200 };
 }
 
-async function fetchEventDetail(eventId: number) {
+async function fetchEventDetail(eventId: number): Promise<AppendEventDetails> {
   const fetchEventDetail = new FetchEventDetail(eventId);
 
-  return { statusCode: 200, eventId: eventId, title: await fetchEventDetail.title() }
+  return {
+    eventId: eventId,
+    title: await fetchEventDetail.title(),
+    rankingType: await fetchEventDetail.rankingType()
+  }
 }

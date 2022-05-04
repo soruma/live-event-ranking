@@ -6,7 +6,8 @@ import { localClientConfig } from "./modules/LocalClientConfig.ts";
 
 export type UpdateEventDetailProps = {
   eventId: number,
-  title: string
+  title: string,
+  rankingType: string
 };
 
 export class UpdateEventDetail {
@@ -28,12 +29,15 @@ export class UpdateEventDetail {
       this.client.updateItem({
         TableName: Deno.env.get("TABLE_NAME")!,
         Key: { eventId: this.updateEventDetail.eventId, attribute: "Details" },
-        UpdateExpression: "set #title=:title",
-        ExpressionAttributeNames: { "#title": "title" },
-        ExpressionAttributeValues: { ":title": this.updateEventDetail.title },
+        UpdateExpression: "set #title = :title, #rankingType = :rankingType",
+        ExpressionAttributeNames: { "#title": "title", "#rankingType": "rankingType" },
+        ExpressionAttributeValues: {
+          ":title": this.updateEventDetail.title,
+          ":rankingType": this.updateEventDetail.rankingType,
+        },
         ReturnValues: "UPDATED_NEW",
       }).then((returnValue) => {
-        if (returnValue["Attributes"] && returnValue["Attributes"]["title"] == undefined) {
+        if (returnValue["Attributes"] && (returnValue["Attributes"]["title"] == undefined || returnValue["Attributes"]["rankingType"] == undefined)) {
           reject(false);
         } else {
           resolve(true);
