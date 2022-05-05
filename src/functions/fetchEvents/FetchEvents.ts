@@ -1,4 +1,39 @@
-import { EventHeldStatusType, OngoingEvents, FinishedEvents } from './types.ts';
+import { Event } from "./modules/types.ts"
+
+export type Category = {
+  id: number,
+  name: string
+};
+
+export type FinishedEvents = {
+  events: ResponseEvent[],
+  apistatusCode: number,
+  status: number
+};
+
+export type OngoingEvents = {
+  canParticipate: ResponseEvent[],
+  eventByCategoryId: { [key: string]: ResponseEvent[] },
+  endingSoon: ResponseEvent[],
+  categories: Category[],
+  apistatusCode: number,
+  status: number
+}
+
+const EventHeldStatusType = {
+  finished: "finished",
+  ongoing: 'ongoing',
+} as const;
+
+export type EventHeldStatusType = typeof EventHeldStatusType[keyof typeof EventHeldStatusType];
+export const AllEventHeldStatusType = Object.values(EventHeldStatusType);
+
+export type ResponseEvent = Event & {
+  id?: number;
+  weight?: number;
+  rankingStartAt?: number;
+  rankingEndAt?: number;
+}
 
 export class FetchEvents {
   finishedEvents(): Promise<FinishedEvents> {

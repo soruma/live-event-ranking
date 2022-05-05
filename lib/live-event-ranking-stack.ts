@@ -6,7 +6,7 @@ import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
 import { aws_events as events }from "aws-cdk-lib";
 import { aws_events_targets as events_targets }from "aws-cdk-lib";
 import { DenoLayer } from "./deno-layer";
-import { FetchEvents, RegisterEvents, AppendEventDetails, RegisterEventRanking, FetchEventsThatUpdateRanking } from "./functions";
+import { FetchEvents, RegisterEvents, RegisterEventRanking, FetchEventsThatUpdateRanking } from "./functions";
 import { RegisterEventsStepfunction } from './register-events-step-function';
 import { RegisterEventRankingsStepfunction } from './register-event-rankings-step-function';
 
@@ -56,33 +56,6 @@ export class LiveEventRankingStack extends Stack {
     new events.Rule(this, "RegisterEventsRule", {
       schedule: events.Schedule.cron({minute: "0", hour: "9", day: "*"}),
       targets: [ new events_targets.SfnStateMachine(registerEventsStepfunction.stateMachine) ],
-    });
-
-    const appendEventDetailsStreamPolicy = new iam.PolicyStatement({
-      actions: [
-        "dynamodb:DescribeStream",
-        "dynamodb:GetRecords",
-        "dynamodb:GetShardIterator",
-        "dynamodb:ListStreams"
-      ],
-      resources: [eventRankingHistoriesTable.tableStreamArn!],
-    });
-    const appendEventDetailsPolicy = new iam.PolicyStatement({
-      actions: ["dynamodb:UpdateItem"],
-      resources: [eventRankingHistoriesTable.tableArn],
-    });
-
-    const appendEventDetails = new AppendEventDetails(this, denoLayer, eventRankingHistoriesTable)
-    appendEventDetails.function.role?.attachInlinePolicy(
-      new iam.Policy(this, "appendEventDetailsFunction-inline-policy", {
-        statements: [appendEventDetailsStreamPolicy, appendEventDetailsPolicy],
-      }),
-    );
-
-    appendEventDetails.function.addEventSourceMapping("FetchEventRankingHistoriesTableStreamSourceMapping", {
-      eventSourceArn: eventRankingHistoriesTable.tableStreamArn,
-      batchSize: 10,
-      startingPosition: lambda.StartingPosition.LATEST,
     });
 
     const fetchEventsThatUpdateRanking = new FetchEventsThatUpdateRanking(this, denoLayer, eventRankingHistoriesTable, 5400);

@@ -1,7 +1,8 @@
 import { Context } from "https://deno.land/x/lambda@1.18.0/mod.ts";
+import { sleep } from "https://deno.land/x/sleep/mod.ts";
 import { ErrorResponse, Event } from "./modules/types.ts";
-import { FetchEvents } from './FetchEvents.ts';
-import { ResponseEvent } from './types.ts';
+import { FetchEvents, OngoingEvents, ResponseEvent } from './FetchEvents.ts';
+import { FetchEvent } from "./FetchEvent.ts";
 
 type EventParam = null;
 type SuccessResponse = {
@@ -9,45 +10,54 @@ type SuccessResponse = {
   events: Event[]
 };
 
-export function handler(
+export async function handler(
   _event: EventParam,
   _context: Context
 ): Promise<SuccessResponse | ErrorResponse> {
-  const fetchEvents = new FetchEvents();
+  try {
+    const events = await fetchEvents().then(
+      (responseEvents: ResponseEvent[]) => {
+        return Promise.resolve(responseEvents);
+      }
+    );
+    const eventIds = events.map((event) => { return event.id! });
+
+    const eventDetails = await Promise.all(
+      eventIds.map(
+        (eventId: number) => {
+          const fetchEvent = new FetchEvent(eventId);
+          return fetchEvent.fetch();
+        },
+      ),
+    );
+
+    return { statusCode: 200, events: eventDetails };;
+  } catch(error) {
+    return { statusCode: 500, message: error.message };
+  }
+}
+
+function fetchEvents(): Promise<ResponseEvent[]> {
+  const instance = new FetchEvents();
 
   return new Promise((resolve, reject) => {
-    fetchEvents.ongoingEvents().then((ongoingEvents) => {
+    instance.ongoingEvents().then((ongoingEvents: OngoingEvents) => {
       if (ongoingEvents.status != 200) {
-        resolve({
+        reject({
           statusCode: ongoingEvents.status,
           message: `Failed to get events from LINE LIVE. response: ${JSON.stringify(ongoingEvents)}`,
         });
       }
-      const events: Event[] = [];
 
+      const events: ResponseEvent[] = [];
       Object.keys(ongoingEvents.eventByCategoryId).forEach(key => {
         const belongToEvents = ongoingEvents.eventByCategoryId[key];
-        const appendCateEvents = belongToEvents.map(event => {
-          event.eventId = event.id!;
-          event.categoryId = parseInt(key);
-          event = removeUnnecessaryAttributes(event);
-          return event;
-        });
-        events.push(...appendCateEvents);
+        events.push(...belongToEvents);
       });
 
-      resolve({ statusCode: 200, events: events });
-    }).catch((error: Error) => {
-      reject({ statusCode: 500, message: error.message });
+      resolve(events);
+    }).catch((error) => {
+      reject(error);
     });
   });
-}
-
-function removeUnnecessaryAttributes(event: ResponseEvent): Event {
-  delete event.id;
-  delete event.weight;
-  delete event.rankingStartAt;
-  delete event.rankingEndAt;
-
-  return event as Event;
 }
