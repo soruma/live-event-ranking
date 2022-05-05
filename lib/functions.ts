@@ -81,7 +81,8 @@ export class RegisterEventRanking {
       environment: {
         USE_AWS: "true",
         TABLE_NAME: eventRankingHistoriesTable.tableName
-      }
+      },
+      timeout: Duration.seconds(30)
     });
   }
 }

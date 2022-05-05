@@ -1,6 +1,7 @@
 import { format } from "./deps.ts";
 import { CreateEventRanking, EventRanking } from "./CreateEventRanking.ts";
 import {
+  FetchEventRanking,
   FetchEventRankings,
   FetchEventRankingsFaildResponse,
   FetchEventRankingsSuccessResponse,
@@ -30,9 +31,12 @@ export class RegisterEventRankings {
         message: (response as FetchEventRankingsFaildResponse).errorMessage,
       };
     }
-    const eventRanking = response as FetchEventRankingsSuccessResponse;
+    const eventRanking = (response as FetchEventRankingsSuccessResponse);
+    const removeedUnnecessaryEventRankings = eventRanking.rows.map((row) => {
+      return this.removeUnnecessaryAttributes(row);
+    });
 
-    await this.registerEventRankings(eventRanking.rows);
+    await this.registerEventRankings(removeedUnnecessaryEventRankings);
 
     let registerCount;
     const last = eventRanking.rows.length - 1;
@@ -50,7 +54,6 @@ export class RegisterEventRankings {
   private async registerEventRankings(eventRankings: EventRanking[]) {
     const timestamp = format(new Date(), "yyyy-MM-ddTHH:mm:ss");
     const promises = eventRankings.map((eventRanking) => {
-      console.log(eventRanking);
       const createEventRanking = new CreateEventRanking(
         timestamp,
         this.eventId,
@@ -61,5 +64,14 @@ export class RegisterEventRankings {
     await Promise.all(promises).then((value) => {
       console.log(value);
     });
+  }
+
+  private removeUnnecessaryAttributes(fetchEventRanking: FetchEventRanking): EventRanking {
+    delete fetchEventRanking.rowNum;
+    delete fetchEventRanking.nowBroadcasting;
+    delete fetchEventRanking.active;
+    delete fetchEventRanking.isBlocked;
+
+    return fetchEventRanking as EventRanking;
   }
 }
