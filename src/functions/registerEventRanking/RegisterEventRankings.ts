@@ -1,6 +1,10 @@
 import { format } from "./deps.ts";
-import { CreateEventRanking } from "./CreateEventRanking.ts";
-import { FetchEventRankings } from "./FetchEventRankings.ts"
+import { CreateEventRanking, EventRanking } from "./CreateEventRanking.ts";
+import {
+  FetchEventRankings,
+  FetchEventRankingsFaildResponse,
+  FetchEventRankingsSuccessResponse,
+} from "./FetchEventRankings.ts";
 
 export interface RegisterEventRankingsStatus {
   status: number;
@@ -17,13 +21,18 @@ export class RegisterEventRankings {
 
   async execute(rowNum = 0): Promise<RegisterEventRankingsStatus> {
     const fetchEventRankings = new FetchEventRankings(this.eventId);
-    const eventRanking = await fetchEventRankings.execute(rowNum);
+    const response = await fetchEventRankings.execute(rowNum);
 
-    if (eventRanking.status != 200) {
-      return { status: eventRanking.status, count: 0, message: eventRanking.errorMessage };
+    if (response.status != 200) {
+      return {
+        status: response.status,
+        count: 0,
+        message: (response as FetchEventRankingsFaildResponse).errorMessage,
+      };
     }
+    const eventRanking = response as FetchEventRankingsSuccessResponse;
 
-    this.registerEventRankings(eventRanking.rows);
+    await this.registerEventRankings(eventRanking.rows);
 
     let registerCount;
     const last = eventRanking.rows.length - 1;
@@ -35,14 +44,22 @@ export class RegisterEventRankings {
       registerCount = lastRowNum;
     }
 
-    return { status: 200, count: registerCount, message: "Success" };
+    return { status: 200, count: registerCount!, message: "Success" };
   }
 
-  private registerEventRankings(eventRankings: any[]) {
+  private async registerEventRankings(eventRankings: EventRanking[]) {
     const timestamp = format(new Date(), "yyyy-MM-ddTHH:mm:ss");
-    eventRankings.map((eventRanking) => {
-      const createEventRanking = new CreateEventRanking(timestamp, this.eventId, eventRanking);
-      createEventRanking.save();
+    const promises = eventRankings.map((eventRanking) => {
+      console.log(eventRanking);
+      const createEventRanking = new CreateEventRanking(
+        timestamp,
+        this.eventId,
+        eventRanking,
+      );
+      return createEventRanking.save();
+    });
+    await Promise.all(promises).then((value) => {
+      console.log(value);
     });
   }
 }

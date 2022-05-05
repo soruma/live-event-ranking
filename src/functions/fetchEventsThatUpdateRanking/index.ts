@@ -55,7 +55,7 @@ export function handler(
     }).then((response) => {
       const items = (response as Doc).Items;
       const eventIds = items.map((event: Event) => {
-        return event.eventId.toString();
+        return { eventId: event.eventId };
       });
       resolve({ statusCode: 200, eventIds: eventIds });
     }).catch((error) => {

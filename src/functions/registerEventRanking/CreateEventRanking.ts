@@ -1,19 +1,24 @@
-import {
-  DynamoDBClient,
-  createClient,
-  Doc
-} from "./modules/deps.ts";
+import { createClient, Doc, DynamoDBClient } from "./modules/deps.ts";
 import { localClientConfig } from "./modules/LocalClientConfig.ts";
+
+export type EventRanking = {
+  rank: number,
+  channelId: number,
+  channelIconURL: string,
+  channelName: string,
+  point: number,
+  followerCount: number,
+}
 
 export class CreateEventRanking {
   timestamp: string;
   evnetId: number;
-  eventRanking: any;
+  eventRanking: EventRanking;
   client: DynamoDBClient;
 
-  constructor(timestamp: string, evnetId: number, eventRanking: any) {
+  constructor(timestamp: string, evnetId: number, eventRanking: EventRanking) {
     this.timestamp = timestamp;
-    this.evnetId = evnetId
+    this.evnetId = evnetId;
     this.eventRanking = eventRanking;
 
     if (Deno.env.get("USE_AWS")!) {
@@ -23,37 +28,32 @@ export class CreateEventRanking {
     }
   }
 
-  async save(): Promise<boolean> {
+  save(): Promise<boolean> {
     return new Promise(
-					(resolve, reject) => {
-						this.client
-							.putItem({
-								TableName: Deno.env.get("TABLE_NAME")!,
-								Item: {
-									EventId: this.evnetId,
-									Attribute: `Timestamp-${this.timestamp}#ChannelId-#${this.eventRanking.channelId}`,
+      (resolve, reject) => {
+        this.client
+          .putItem({
+            TableName: Deno.env.get("TABLE_NAME")!,
+            Item: {
+              eventId: this.evnetId,
+              attribute: `Timestamp-${this.timestamp}#ChannelId-#${this.eventRanking.channelId}`,
+              timestamp: this.timestamp,
 
-									Rank: this.eventRanking.rank,
-									Point: this.eventRanking.point,
-									Timestamp: this.timestamp,
-									ChannelId: this.eventRanking.channelId,
-									ChannelIconURL: this.eventRanking.channelIconURL,
-									ChannelName: this.eventRanking.channelName,
-									FollowerCount: this.eventRanking.followerCount,
-								},
-							})
-							.then(
-								(_value: Doc) => {
-									resolve(true);
-								},
-							)
-							.catch(
-								(reason: any) => {
-									console.log(reason);
-									reject(false);
-								},
-							);
-					},
-				);
+              ...this.eventRanking,
+            },
+          })
+          .then(
+            (_value: Doc) => {
+              resolve(true);
+            },
+          )
+          .catch(
+            (reason: any) => {
+              console.log(reason);
+              reject(false);
+            },
+          );
+      },
+    );
   }
 }

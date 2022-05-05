@@ -2,16 +2,19 @@
 import { Context } from "./deps.ts"
 import { RegisterEventRankings } from "./RegisterEventRankings.ts"
 
+type EventParam = {
+  eventId: number
+};
 
 export async function handler(
-  event: string,
+  event: EventParam,
   _context: Context
 ): Promise<any> {
   let response;
 
   try {
     console.log(event);
-    const eventId = parseInt(event || "0");
+    const eventId = event.eventId;
     const rankings = new RegisterEventRankings(eventId);
 
     response = await rankings.execute();
