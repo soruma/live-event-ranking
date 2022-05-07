@@ -1,12 +1,11 @@
 import { Stack, StackProps } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
 import { aws_iam as iam } from 'aws-cdk-lib';
-import { aws_lambda as lambda } from 'aws-cdk-lib';
 import { aws_dynamodb as dynamodb } from 'aws-cdk-lib';
 import { aws_events as events }from "aws-cdk-lib";
 import { aws_events_targets as events_targets }from "aws-cdk-lib";
 import { DenoLayer } from "./deno-layer";
-import { FetchEvents, RegisterEvents, RegisterEventRanking, FetchEventsThatUpdateRanking } from "./functions";
+import { FetchEvents, FetchBlockEvents, RegisterEvents, RegisterEventRanking, FetchEventsThatUpdateRanking } from "./functions";
 import { RegisterEventsStepfunction } from './register-events-step-function';
 import { RegisterEventRankingsStepfunction } from './register-event-rankings-step-function';
 
@@ -38,6 +37,16 @@ export class LiveEventRankingStack extends Stack {
 
     const fetchEvents = new FetchEvents(this, denoLayer);
 
+    const fetchBlockEvents = new FetchBlockEvents(this, denoLayer, liveEventsTable, 5400);
+    fetchBlockEvents.function.role?.attachInlinePolicy(
+      new iam.Policy(this, "fetchBlockEventsFunction-inline-policy", {
+        statements: [new iam.PolicyStatement({
+                        actions: ["dynamodb:Scan"],
+                        resources: [liveEventsTable.tableArn]
+                      })]
+      })
+    );
+
     const registerEvents = new RegisterEvents(this, denoLayer, liveEventsTable)
     registerEvents.function.role?.attachInlinePolicy(
       new iam.Policy(this, "registerEventFunction-inline-policy", {
@@ -48,7 +57,7 @@ export class LiveEventRankingStack extends Stack {
       })
     );
 
-    const registerEventsStepfunction = new RegisterEventsStepfunction(this, fetchEvents, registerEvents);
+    const registerEventsStepfunction = new RegisterEventsStepfunction(this, fetchEvents, fetchBlockEvents, registerEvents);
     new events.Rule(this, "RegisterEventsRule", {
       schedule: events.Schedule.cron({minute: "0", hour: "9", day: "*"}),
       targets: [ new events_targets.SfnStateMachine(registerEventsStepfunction.stateMachine) ],

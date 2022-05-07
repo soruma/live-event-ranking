@@ -1,8 +1,7 @@
 import { Context } from "https://deno.land/x/lambda@1.18.0/mod.ts";
-import { sleep } from "https://deno.land/x/sleep/mod.ts";
 import { ErrorResponse, Event } from "./modules/types.ts";
 import { FetchEvents, OngoingEvents, ResponseEvent } from './FetchEvents.ts';
-import { FetchEvent } from "./FetchEvent.ts";
+import { FetchEvent } from "./modules/FetchEvent.ts";
 
 type EventParam = null;
 type SuccessResponse = {

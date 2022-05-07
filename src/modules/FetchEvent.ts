@@ -1,5 +1,5 @@
-import { DOMParser } from "./deps.ts";
-import { Event } from "./modules/types.ts"
+import { DOMParser } from 'https://deno.land/x/deno_dom@v0.1.22-alpha/deno-dom-wasm.ts';
+import { Event } from "./types.ts"
 
 export class FetchEvent {
   eventId: number;
