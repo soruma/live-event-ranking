@@ -65,7 +65,7 @@ export class RegisterEventRanking {
         USE_AWS: "true",
         TABLE_NAME: eventRankingHistoriesTable.tableName
       },
-      timeout: Duration.seconds(30)
+      timeout: Duration.seconds(60)
     });
   }
 }

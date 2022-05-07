@@ -3,6 +3,8 @@ import { Event } from "./modules/types.ts"
 
 export class FetchEvent {
   eventId: number;
+  // deno-lint-ignore no-explicit-any
+  dataEvent: any;
 
   constructor(eventId: number) {
     this.eventId = eventId;
@@ -12,16 +14,16 @@ export class FetchEvent {
     const res = await fetch(this.url());
     const html = await res.text();
     const doc = new DOMParser().parseFromString(html, 'text/html')!;
-    const dataEvent = JSON.parse(doc.querySelector("#data")!.attributes["data-event"]);
+    this.dataEvent = JSON.parse(doc.querySelector("#data")!.attributes["data-event"]);
 
     return {
-      eventId: dataEvent.id,
-      title: dataEvent.title.replaceAll("“", "").replaceAll("”", "").replaceAll("'", ""),
-      bannerImageURL: dataEvent.bannerImageURL,
-      startAt: dataEvent.startAt,
-      endAt: dataEvent.endAt,
-      rankingType: dataEvent.rankingType,
-    }
+      eventId: this.dataEvent.id,
+      title: this.dataEvent.title.replaceAll("“", "").replaceAll("”", "").replaceAll("'", ""),
+      bannerImageURL: this.dataEvent.bannerImageURL,
+      startAt: this.dataEvent.startAt,
+      endAt: this.dataEvent.endAt,
+      rankingType: this.dataEvent.rankingType,
+    };
   }
 
   private url(): string {

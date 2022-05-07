@@ -36,7 +36,7 @@ export class CreateEventRanking {
             TableName: Deno.env.get("TABLE_NAME")!,
             Item: {
               eventId: this.evnetId,
-              attribute: `Timestamp-${this.timestamp}#ChannelId-#${this.eventRanking.channelId}`,
+              SK: `EventId-${this.evnetId}#Timestamp-${this.timestamp}#ChannelId-#${this.eventRanking.channelId}`,
               timestamp: this.timestamp,
 
               ...this.eventRanking,

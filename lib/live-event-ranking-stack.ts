@@ -14,40 +14,36 @@ export class LiveEventRankingStack extends Stack {
   constructor(scope: Construct, id: string, props?: StackProps) {
     super(scope, id, props);
 
-    const eventRankingHistoriesTable = new dynamodb.Table(this, "EventRankingHistories", {
+    const liveEventsTable = new dynamodb.Table(this, "LiveEvents", {
+      partitionKey: {
+        name: "eventId",
+        type: dynamodb.AttributeType.NUMBER,
+      },
+      tableName: "LiveEvents",
+    });
+
+    const liveEventRankingHistoriesTable = new dynamodb.Table(this, "LiveEventRankingHistories", {
       partitionKey: {
         name: "eventId",
         type: dynamodb.AttributeType.NUMBER,
       },
       sortKey: {
-        name: "attribute",
+        name: "SK",
         type: dynamodb.AttributeType.STRING,
       },
-      tableName: "EventRankingHistories",
-      stream: dynamodb.StreamViewType.KEYS_ONLY,
-      readCapacity: 5,
-      writeCapacity: 5
+      tableName: "LiveEventRankingHistories",
     });
-
-    const channelPoint: dynamodb.GlobalSecondaryIndexProps = {
-      indexName: "ChannelPoint",
-      partitionKey: { name: "channelId", type: dynamodb.AttributeType.NUMBER },
-      sortKey: { name: "timestamp", type: dynamodb.AttributeType.STRING },
-      readCapacity: 5,
-      writeCapacity: 5
-    };
-    eventRankingHistoriesTable.addGlobalSecondaryIndex(channelPoint);
 
     const denoLayer = new DenoLayer(this);
 
     const fetchEvents = new FetchEvents(this, denoLayer);
 
-    const registerEvents = new RegisterEvents(this, denoLayer, eventRankingHistoriesTable)
+    const registerEvents = new RegisterEvents(this, denoLayer, liveEventsTable)
     registerEvents.function.role?.attachInlinePolicy(
       new iam.Policy(this, "registerEventFunction-inline-policy", {
         statements: [new iam.PolicyStatement({
 									actions: ["dynamodb:BatchWriteItem"],
-									resources: [eventRankingHistoriesTable.tableArn],
+									resources: [liveEventsTable.tableArn],
 								})]
       })
     );
@@ -58,22 +54,22 @@ export class LiveEventRankingStack extends Stack {
       targets: [ new events_targets.SfnStateMachine(registerEventsStepfunction.stateMachine) ],
     });
 
-    const fetchEventsThatUpdateRanking = new FetchEventsThatUpdateRanking(this, denoLayer, eventRankingHistoriesTable, 5400);
+    const fetchEventsThatUpdateRanking = new FetchEventsThatUpdateRanking(this, denoLayer, liveEventsTable, 5400);
     fetchEventsThatUpdateRanking.function.role?.attachInlinePolicy(
       new iam.Policy(this, "fetchEventsThatUpdateRankingFunction-inline-policy", {
         statements: [new iam.PolicyStatement({
                         actions: ["dynamodb:Scan"],
-                        resources: [eventRankingHistoriesTable.tableArn]
+                        resources: [liveEventsTable.tableArn]
                       })]
       })
     );
 
-    const registerEventRanking = new RegisterEventRanking(this, denoLayer, eventRankingHistoriesTable);
+    const registerEventRanking = new RegisterEventRanking(this, denoLayer, liveEventRankingHistoriesTable);
     registerEventRanking.function.role?.attachInlinePolicy(
       new iam.Policy(this, "registerEventRankingFunction-inline-policy", {
         statements: [new iam.PolicyStatement({
                         actions: ["dynamodb:PutItem"],
-                        resources: [eventRankingHistoriesTable.tableArn]
+                        resources: [liveEventRankingHistoriesTable.tableArn]
                       })]
       })
     );

@@ -25,8 +25,7 @@ export class CreateEvents {
       return {
         PutRequest: {
           Item: {
-            ...event,
-            attribute: "Details",
+            ...event
           }
         }
       }

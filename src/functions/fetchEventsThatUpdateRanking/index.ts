@@ -30,7 +30,7 @@ export function handler(
   const now = Date.now();
   const graceToExcludeEvents = parseInt(Deno.env.get("GRACE_TO_EXCLUDE_EVENTS")!);
 
-  const client = (() => {
+  const client: DynamoDBClient = (() => {
 			if (Deno.env.get("USE_AWS")!) {
 				return createClient();
 			} else {
@@ -41,10 +41,8 @@ export function handler(
   return new Promise((resolve, reject) => {
     client.scan({
       TableName: Deno.env.get("TABLE_NAME")!,
+      AttributesToGet: ["eventId"],
       ScanFilter: {
-        attribute: {
-          AttributeValueList: ["Details"], ComparisonOperator: "EQ"
-        },
         rankingType: {
           AttributeValueList: ["NONE"], ComparisonOperator: "NE"
         },

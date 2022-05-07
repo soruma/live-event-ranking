@@ -26,7 +26,7 @@ services:
     volumes:
       - ./src:/var/task
     environment:
-      - TABLE_NAME=EventRankingHistoriesE67FD46C
+      - TABLE_NAME=LiveEventsE3F1641A
     ports:
       - 9001:8080
 
@@ -36,7 +36,7 @@ services:
     volumes:
       - ./src:/var/task
     environment:
-      - TABLE_NAME=EventRankingHistoriesE67FD46C
+      - TABLE_NAME=LiveEventsE3F1641A
       - GRACE_TO_EXCLUDE_EVENTS=1000
     ports:
       - 9002:8080
@@ -47,6 +47,6 @@ services:
     volumes:
       - ./src:/var/task
     environment:
-      - TABLE_NAME=EventRankingHistoriesE67FD46C
+      - TABLE_NAME=LiveEventRankingHistories0D03B3C3
     ports:
       - 9003:8080

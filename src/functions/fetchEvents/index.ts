@@ -31,7 +31,7 @@ export async function handler(
       ),
     );
 
-    return { statusCode: 200, events: eventDetails };;
+    return { statusCode: 200, events: eventDetails };
   } catch(error) {
     return { statusCode: 500, message: error.message };
   }
