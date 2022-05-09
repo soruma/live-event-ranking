@@ -10,12 +10,16 @@ export class FetchEvent {
     this.eventId = eventId;
   }
 
-  async fetch(): Promise<Event> {
+  async fetch(): Promise<FetchEvent> {
     const res = await fetch(this.url());
     const html = await res.text();
     const doc = new DOMParser().parseFromString(html, 'text/html')!;
     this.dataEvent = JSON.parse(doc.querySelector("#data")!.attributes["data-event"]);
 
+    return this;
+  }
+
+  event(): Event {
     return {
       eventId: this.dataEvent.id,
       title: this.dataEvent.title.replaceAll("“", "").replaceAll("”", "").replaceAll("'", ""),

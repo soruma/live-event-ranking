@@ -23,9 +23,9 @@ export async function handler(
 
     const eventDetails = await Promise.all(
       eventIds.map(
-        (eventId: number) => {
+        async (eventId: number) => {
           const fetchEvent = new FetchEvent(eventId);
-          return fetchEvent.fetch();
+          return (await fetchEvent.fetch()).event();
         },
       ),
     );
