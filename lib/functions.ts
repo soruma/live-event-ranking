@@ -31,6 +31,7 @@ export class FetchBlockEvents {
         TABLE_NAME: table.tableName,
         GRACE_TO_EXCLUDE_EVENTS: graceToExcludeEvents.toString()
       },
+      memorySize: 256,
       timeout: Duration.seconds(10)
     });
   }
