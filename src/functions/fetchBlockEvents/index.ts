@@ -47,6 +47,7 @@ export async function handler(
     const events: Event[] = [];
     await Promise.all(eventIds.map((eventId) => {
       sleep(1);
+      console.log(`Fetching event for ${eventId}`);
       const fetchEvent = new FetchEvent(eventId);
       return fetchEvent.fetch();
     })).then((fetchEvents) => {
